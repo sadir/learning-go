@@ -23,7 +23,7 @@ type Human struct {
 
 type Employee struct {
 	Human     // embedded field Human
-	speciality, phone string
+	company, speciality, phone string
 }
 
 type Student struct {
@@ -32,12 +32,35 @@ type Student struct {
 	loan   float32
 }
 
+func (h Human) sayHi() {
+  fmt.Printf("Hi, I am %s you can call me on %s\n", h.name, h.primaryContact())
+}
+
+func (e Employee) sayHi() {
+  fmt.Printf("Hi, I am %s, I work for %s as a %s, you can call me on %s\n",
+  e.name, e.company, e.speciality, e.primaryContact())
+}
+
+func (h Human) Sing(lyrics string) {
+	fmt.Println("La la la la...", lyrics)
+}
+
 func (e Employee) primaryContact() string {
   var phoneNumber string
   if e.phone != "" {
     phoneNumber = e.phone
   } else if e.Human.phone != "" {
     phoneNumber = e.Human.phone
+  } else {
+    phoneNumber = "n/a"
+  }
+  return phoneNumber
+}
+
+func (h Human) primaryContact() string {
+  var phoneNumber string
+  if h.phone != "" {
+    phoneNumber = h.phone
   } else {
     phoneNumber = "n/a"
   }
@@ -127,32 +150,38 @@ func main() {
 
   e1 := Employee{
     Human: Human{name: "Bob", age: 34, phone: "07888888888"},
+    company: "BT",
     speciality: "Designer",
     phone: "07999999999",
   }
 
   e2 := Employee{
     Human: Human{name: "Bobby", age: 34, phone: "07888888888"},
-    speciality: "Designer",
+    company: "Monzo",
+    speciality: "Engineer",
   }
 
   e3 := Employee{
     Human: Human{name: "Bobz", age: 34},
-    speciality: "Designer",
+    company: "Myself",
+    speciality: "jack of all trades",
   }
 
   fmt.Printf("employee 1 has a name of: %v\n", e1.name) // bob
   fmt.Printf("employee 1 has a phone of: %v\n", e1.phone) // 07999999999
   fmt.Printf("employee 1 has a personal phone of: %v\n", e1.Human.phone) // 07888888888
   fmt.Printf("employee 1 has a primary contact of: %s\n", e1.primaryContact()) // 07999999999
+  e1.sayHi()
 
   fmt.Printf("employee 2 has a name of: %v\n", e2.name) // Bobby
   fmt.Printf("employee 2 has a phone of: %v\n", e2.phone) // ""
   fmt.Printf("employee 2 has a personal phone of: %v\n", e2.Human.phone) // 07888888888
   fmt.Printf("employee 2 has a primary contact of: %s\n", e2.primaryContact()) // 07888888888
+  e2.sayHi()
 
   fmt.Printf("employee 3 has a name of: %v\n", e3.name) // Bobby
   fmt.Printf("employee 3 has a phone of: %v\n", e3.phone) // ""
   fmt.Printf("employee 3 has a personal phone of: %v\n", e3.Human.phone) // ""
   fmt.Printf("employee 3 has a primary contact of: %s\n", e3.primaryContact()) // n/a
+  e3.sayHi()
 }
