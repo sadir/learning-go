@@ -32,8 +32,19 @@ type Student struct {
 	loan   float32
 }
 
+// Interface Men implemented by Human, Student and Employee
+type SwellGuy interface {
+	sayHi()
+	sing(lyrics string)
+}
+
 func (h Human) sayHi() {
   fmt.Printf("Hi, I am %s you can call me on %s\n", h.name, h.primaryContact())
+}
+
+func (s Student) sayHi() {
+  fmt.Printf("Hi, I am %s, I study at %s and am in %v worth of debt :( . You can call me on %s as long as it isn't about money\n",
+  s.name, s.school, s.loan, s.primaryContact())
 }
 
 func (e Employee) sayHi() {
@@ -41,7 +52,7 @@ func (e Employee) sayHi() {
   e.name, e.company, e.speciality, e.primaryContact())
 }
 
-func (h Human) Sing(lyrics string) {
+func (h Human) sing(lyrics string) {
 	fmt.Println("La la la la...", lyrics)
 }
 
@@ -184,4 +195,19 @@ func main() {
   fmt.Printf("employee 3 has a personal phone of: %v\n", e3.Human.phone) // ""
   fmt.Printf("employee 3 has a primary contact of: %s\n", e3.primaryContact()) // n/a
   e3.sayHi()
+
+  var guy SwellGuy
+  guy = e1 //Employee implements the interface methods and can therefore be used as that interface.
+  guy.sayHi()
+  guy.sing("I am lorde") //you can only use the interface methods though, so can't access the name field as an example
+
+  s1 := Student{
+    Human: Human{name: "Bobby Tables", age: 20, phone: "07777777777"},
+    school: "University of Sussex",
+    loan: 1000000,
+  }
+
+  guy = s1
+  guy.sayHi()
+  guy.sing("I am lorde") //you can only use the interface methods though, so can't access the name field as an example
 }
