@@ -16,6 +16,34 @@ const i = 10000
 const MaxThread = 10
 const prefix = "sadir_"
 
+type Human struct {
+	name, phone  string
+	age   int
+}
+
+type Employee struct {
+	Human     // embedded field Human
+	speciality, phone string
+}
+
+type Student struct {
+	Human
+	school string
+	loan   float32
+}
+
+func (e Employee) primaryContact() string {
+  var phoneNumber string
+  if e.phone != "" {
+    phoneNumber = e.phone
+  } else if e.Human.phone != "" {
+    phoneNumber = e.Human.phone
+  } else {
+    phoneNumber = "n/a"
+  }
+  return phoneNumber
+}
+
 func main() {
   // Some local variables, which you must use to avoid compilation errors
   vname4, vname5, vname6 := 4, 5, 6
@@ -63,9 +91,68 @@ func main() {
 
   //Append has some interesting functionality
   fmt.Printf("Before the append we have this in the array: %v\n", arr4) //[1,2,3,11,4..10]
-  fmt.Printf("And this in the slice:  %v\n", slice4) //[1,2,3,11,4..10]
+  fmt.Printf("And this in the slice:  %v\n", slice4) //[1,2,3]
   slice7 := append(slice4, 11)
   fmt.Printf("Appending to slices adds the value on the end %v\n", slice7) //[1,2,3,11]
   fmt.Printf("but it doesn't change the original slice as that is a pointer to the array %v\n", slice4) //[1,2,3]
   fmt.Printf("but it does modify the original array that the slices pointed to! %v\n", arr4) //[1,2,3,11,4..10]
+
+  //Maps are the go equivalent of ruby's hashes
+  map1 := make(map[string] int, 10) // this initializes a map for you.
+  var map2 map[string] int // this creates a nil map. A map which doesn't point to an initialised map in memory.
+  map1["one"] = 1
+  map1["another one"] = 1
+  //map2["a third one"] = 1 This won't work, because map2 doesn't point to a map in memory. You can't add to nil.
+
+  fmt.Printf("map1 is: %v\n", map1) // map[one:1 another one:1] or map[another one:1 one:1]
+  fmt.Printf("map2 is: %v\n", map2) // map[]
+
+  delete(map1, "another one")
+  fmt.Printf("After delete map1 is: %v\n", map1) // map[one:1]
+
+  _, ok := map1["one"]
+  fmt.Printf("You can use the _, ok syntax to check if a map contains a value: %v\n", ok) // true
+  map1["another one"] = 1
+  map1["a third one"] = 1
+
+  for key, value := range map1 {
+    fmt.Println("Key:", key, "Value:", value)
+  }
+  //Key: one Value: 1
+  //Key: another one Value: 1
+  //Key: a third one Value: 1
+  // Maps are unordered and therefore these can print in any sequence
+
+  type testInt func(int) bool // you can define types of variables to be functions with specifics inputs and outputs.
+
+  e1 := Employee{
+    Human: Human{name: "Bob", age: 34, phone: "07888888888"},
+    speciality: "Designer",
+    phone: "07999999999",
+  }
+
+  e2 := Employee{
+    Human: Human{name: "Bobby", age: 34, phone: "07888888888"},
+    speciality: "Designer",
+  }
+
+  e3 := Employee{
+    Human: Human{name: "Bobz", age: 34},
+    speciality: "Designer",
+  }
+
+  fmt.Printf("employee 1 has a name of: %v\n", e1.name) // bob
+  fmt.Printf("employee 1 has a phone of: %v\n", e1.phone) // 07999999999
+  fmt.Printf("employee 1 has a personal phone of: %v\n", e1.Human.phone) // 07888888888
+  fmt.Printf("employee 1 has a primary contact of: %s\n", e1.primaryContact()) // 07999999999
+
+  fmt.Printf("employee 2 has a name of: %v\n", e2.name) // Bobby
+  fmt.Printf("employee 2 has a phone of: %v\n", e2.phone) // ""
+  fmt.Printf("employee 2 has a personal phone of: %v\n", e2.Human.phone) // 07888888888
+  fmt.Printf("employee 2 has a primary contact of: %s\n", e2.primaryContact()) // 07888888888
+
+  fmt.Printf("employee 3 has a name of: %v\n", e3.name) // Bobby
+  fmt.Printf("employee 3 has a phone of: %v\n", e3.phone) // ""
+  fmt.Printf("employee 3 has a personal phone of: %v\n", e3.Human.phone) // ""
+  fmt.Printf("employee 3 has a primary contact of: %s\n", e3.primaryContact()) // n/a
 }
